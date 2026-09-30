@@ -1,0 +1,4 @@
+[submodule "deps/proot"]
+	path = deps/proot
+	url = https://github.com/OpenMinis/proot.git
+	branch = master

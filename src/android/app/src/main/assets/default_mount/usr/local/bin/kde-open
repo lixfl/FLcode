@@ -1,0 +1,4 @@
+#!/bin/sh
+# FenglingApp URL interceptor — routes kde-open into the host-side
+# OpenOffloadHandler via fengling-open. See fengling-open for details.
+exec /usr/local/bin/fengling-open "$@"

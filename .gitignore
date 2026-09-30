@@ -1,0 +1,78 @@
+# Gradle files
+.gradle/
+build/
+
+# Local configuration file (sdk path, etc)
+local.properties
+
+# Build-time provider customization (local overrides; must stay out of the repo)
+provider-customization.properties
+
+# Log/OS Files
+*.log
+
+# Android Studio generated files and folders
+captures/
+.externalNativeBuild/
+.cxx/
+*.aab
+*.apk
+output-metadata.json
+
+# IntelliJ
+*.iml
+.idea/
+misc.xml
+deploymentTargetDropDown.xml
+render.experimental.xml
+
+# Keystore files
+*.jks
+*.keystore
+
+# Google Services (e.g. APIs or Firebase)
+google-services.json
+
+# Android Profiling
+*.hprof
+
+# macOS
+.DS_Store
+
+# Environment and secrets
+.env
+.env.*
+
+# Claude Code
+.claude/
+
+# Temporary patches
+deps/*.patch
+
+src-bak/
+src/android/app/src/main/assets/bashism/
+
+# Debug-only skill assets staged by scripts/gen_debug_skill_android.sh from
+# .claude/skills/debug-server/; regenerated on every debug build.
+src/android/app/src/debug/assets/debug-skill/
+
+# ── Build artifacts produced by deps/ scripts — never commit binaries ──
+# These are generated, not authored: rebuild them from source instead of
+# tracking them (tracked binaries also leak the build machine's paths via
+# debug symbols). See deps/build_proot.sh and docs for the build order.
+src/android/app/src/main/assets/proot-aarch64
+src/android/app/src/main/assets/alpine-minirootfs.tar.gz
+src/android/app/src/main/jniLibs/arm64-v8a/*.so
+# The two proot ELF loaders are TRACKED, as an exception to the rule above.
+# They are vendored Termux builds (proot 5.1.107-70) whose Android-specific
+# loader patches our deps/proot fork does not carry; pairing the fork-built
+# loader with our proot SEGVs the guest on some ROMs (OnePlus 7 Pro /
+# crDroid 12.11: "vpid 1: terminated with signal 11"), and the exact Termux
+# deb has been rotated out of their repo — these bytes cannot be re-downloaded
+# or rebuilt from anything in this tree. See deps/build_proot.sh.
+!src/android/app/src/main/jniLibs/arm64-v8a/libproot-loader.so
+!src/android/app/src/main/jniLibs/arm64-v8a/libproot-loader32.so
+
+# rclone.aar is a build artifact of deps/build_rclone_android.sh (~15MB),
+# not a vendored binary.
+src/android/app/libs/rclone.aar
