@@ -6996,65 +6996,6 @@ fun ChatScreen(
                         )
                     }
 
-                    // [风铃code] T-context-bar — persistent context-window
-                    // meter right under the stats line. Data was always live
-                    // (tokenStats.context = latestContextTokens, window =
-                    // currentModelContextWindow) but only surfaced in the
-                    // on-demand Token sheet; a chat/agent user benefits from
-                    // an always-on "how full is the window / when will it
-                    // auto-compact" bar. Color escalates near the auto-compact
-                    // threshold so the user anticipates compaction instead of
-                    // being surprised by it. Hidden when the model has no known
-                    // window or nothing has been spent yet.
-                    run {
-                        val window = viewModel.currentModelContextWindow
-                        val used = tokenStats.context
-                        if (window != null && window > 0 && used > 0) {
-                            val pct = (used.toDouble() / window * 100).coerceIn(0.0, 100.0)
-                            val frac = (pct / 100).toFloat()
-                            val barColor = when {
-                                pct >= 90 -> MaterialTheme.colorScheme.error
-                                pct >= 75 -> MaterialTheme.colorScheme.tertiary
-                                else -> MaterialTheme.colorScheme.primary
-                            }
-                            val fmtK = { v: Int ->
-                                if (v >= 1000) "${"%.1f".format(v / 1000.0)}k" else v.toString()
-                            }
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 12.dp)
-                                    .padding(bottom = 6.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                            ) {
-                                // Thin track + fill (custom, not LinearProgress
-                                // Indicator, so height/corner match the compact
-                                // composer chrome).
-                                Box(
-                                    modifier = Modifier
-                                        .weight(1f)
-                                        .height(4.dp)
-                                        .clip(RoundedCornerShape(2.dp))
-                                        .background(MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.15f)),
-                                ) {
-                                    Box(
-                                        modifier = Modifier
-                                            .fillMaxWidth(frac.coerceIn(0.001f, 1f))
-                                            .height(4.dp)
-                                            .clip(RoundedCornerShape(2.dp))
-                                            .background(barColor),
-                                    )
-                                }
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Text(
-                                    text = "上下文 ${fmtK(used)}/${fmtK(window)} · ${pct.toInt()}%",
-                                    fontSize = 11.sp,
-                                    maxLines = 1,
-                                    color = barColor.copy(alpha = 0.9f),
-                                )
-                            }
-                        }
-                    }
                 }
             }
                 // --- Swipe-to-send floating hint (extracted helper) ---

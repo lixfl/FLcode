@@ -40,6 +40,7 @@ import com.fenglingcode.app.provider.LLMProvider
 import com.fenglingcode.app.provider.ProviderFactory
 import com.fenglingcode.app.provider.catalogMaxThinkingLevel
 import com.fenglingcode.app.provider.effectiveMaxThinkingLevel
+import com.fenglingcode.app.provider.selectableThinkingLevels
 import com.fenglingcode.app.agent.shell.BashismDetector
 import com.fenglingcode.app.agent.shell.BashismReminder
 import com.fenglingcode.app.agent.shell.OnDemandBash
@@ -1643,15 +1644,21 @@ class ChatViewModel(
 
     /**
      * [T-android-thinking-level-arch] Levels the chat composer picker should
-     * offer: everything up to the current model's ceiling, EXCLUDING OFF —
-     * mirrors iOS availableThinkingLevels (`filter { $0 != .off && $0 <= max }`).
-     * There is no standalone "Off" capsule; tapping the already-selected level
-     * toggles thinking off (see ThinkingLevelPicker). setThinkingLevel
+     * offer, EXCLUDING OFF. When the model's catalog declares its exact
+     * accepted effort tiers (selectableThinkingLevels), only those distinct
+     * tiers are offered — anything between them would be snapped onto a
+     * neighbour by clampEffort on the wire, so offering them made the picker
+     * look broken (tapping Low / Medium / XHigh on a ["high","max"] model
+     * all sent the same "high"). Falls back to every level up to the
+     * model's ceiling when no tiers are declared. setThinkingLevel
      * additionally clamps as a belt-and-suspenders defense.
      */
     val availableThinkingLevels: List<ThinkingLevel>
         get() {
             val ceiling = currentModelMaxThinkingLevel
+            val declared = currentModel?.selectableThinkingLevels.orEmpty()
+                .filter { it != ThinkingLevel.OFF && it.rank <= ceiling.rank }
+            if (declared.isNotEmpty()) return declared
             return ThinkingLevel.entries.filter { it != ThinkingLevel.OFF && it.rank <= ceiling.rank }
         }
 
